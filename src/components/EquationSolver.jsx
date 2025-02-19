@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Settings2, Calculator, Copy, Link } from 'lucide-react';
+import { Settings2, Calculator, Copy, Link, Github } from 'lucide-react';
 
 const API_TYPES = {
     SEPARATION: 'SEPARATION',
@@ -83,7 +83,7 @@ const NumberInput = ({ value, onChange, onBlur, ...props }) => {
 };
 
 export default function EquationSolver() {
-    const [equation, setEquation] = useState(PRESET_EQUATIONS[0].equation);
+    const [equation, setEquation] = useState("sin(x)");
     const [method, setMethod] = useState(METHODS[0]);
     const [start, setStart] = useState(-10);
     const [end, setEnd] = useState(10);
@@ -96,7 +96,7 @@ export default function EquationSolver() {
     const [apiUrl, setApiUrl] = useState('');
 
     const generateApiUrl = () => {
-        let url = `http://iney.lol:9090/api/equation/${method.endpoint}?equation=${encodeURIComponent(equation)}`;
+        let url = `http://localhost:9090/api/equation/${method.endpoint}?equation=${encodeURIComponent(equation)}`;
 
         switch (method.endpoint) {
             case 'task1':
@@ -298,175 +298,186 @@ export default function EquationSolver() {
     return (
         <div className="container mx-auto p-4 max-w-6xl space-y-6">
             <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="flex items-center gap-2 mb-6">
-                    <Calculator className="w-8 h-8" />
-                    <h1 className="text-2xl font-bold">Решение уравнений</h1>
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Calculator className="w-8 h-8"/>
+                        <h1 className="text-2xl font-bold">Решение уравнений</h1>
+                    </div>
+                    <a
+                        href="https://github.com/ineydlis"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                        <Github className="w-5 h-5"/>
+                        <span className="text-sm">Разработал: Мельников Егор 1521-2</span>
+                    </a>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Уравнение</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={equation}
-                                    onChange={(e) => setEquation(e.target.value)}
-                                    className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                />
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setShowPresets(!showPresets)}
-                                        className="h-full px-4 bg-gray-100 rounded hover:bg-gray-200 flex items-center gap-2 transition-colors"
-                                    >
-                                        <Settings2 className="w-4 h-4" />
-                                    </button>
-                                    {showPresets && (
-                                        <div className="absolute z-10 right-0 mt-2 w-96 bg-white border rounded-lg shadow-lg max-h-96 overflow-y-auto">
-                                            {PRESET_EQUATIONS.map((preset) => (
-                                                <button
-                                                    key={preset.id}
-                                                    onClick={() => {
-                                                        setEquation(preset.equation);
-                                                        setShowPresets(false);
-                                                    }}
-                                                    className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center"
-                                                >
-                                                    <span>{preset.id}. {preset.equation}</span>
-                                                    {preset.note && (
-                                                        <span className="text-sm text-gray-500">{preset.note}</span>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Уравнение</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={equation}
+                                        onChange={(e) => setEquation(e.target.value)}
+                                        className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    />
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setShowPresets(!showPresets)}
+                                            className="h-full px-4 bg-gray-100 rounded hover:bg-gray-200 flex items-center gap-2 transition-colors"
+                                        >
+                                            <Settings2 className="w-4 h-4"/>
+                                        </button>
+                                        {showPresets && (
+                                            <div
+                                                className="absolute z-10 right-0 mt-2 w-96 bg-white border rounded-lg shadow-lg max-h-96 overflow-y-auto">
+                                                {PRESET_EQUATIONS.map((preset) => (
+                                                    <button
+                                                        key={preset.id}
+                                                        onClick={() => {
+                                                            setEquation(preset.equation);
+                                                            setShowPresets(false);
+                                                        }}
+                                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center"
+                                                    >
+                                                        <span>{preset.id}. {preset.equation}</span>
+                                                        {preset.note && (
+                                                            <span className="text-sm text-gray-500">{preset.note}</span>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Метод решения</label>
-                            <select
-                                value={method.id}
-                                onChange={(e) => setMethod(METHODS.find(m => m.id === parseInt(e.target.value)))}
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                            >
-                                {METHODS.map(m => (
-                                    <option key={m.id} value={m.id}>{m.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    {method.endpoint === 'task3' ? 'Начальное приближение' : 'Начало интервала'}
-                                </label>
-                                <NumberInput
-                                    value={start}
-                                    onChange={setStart}
-                                    placeholder="Введите число"
-                                />
+                                <label className="block text-sm font-medium mb-1">Метод решения</label>
+                                <select
+                                    value={method.id}
+                                    onChange={(e) => setMethod(METHODS.find(m => m.id === parseInt(e.target.value)))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                >
+                                    {METHODS.map(m => (
+                                        <option key={m.id} value={m.id}>{m.name}</option>
+                                    ))}
+                                </select>
                             </div>
-                            {method.endpoint !== 'task3' && (
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Конец интервала</label>
+                                    <label className="block text-sm font-medium mb-1">
+                                        {method.endpoint === 'task3' ? 'Начальное приближение' : 'Начало интервала'}
+                                    </label>
                                     <NumberInput
-                                        value={end}
-                                        onChange={setEnd}
+                                        value={start}
+                                        onChange={setStart}
                                         placeholder="Введите число"
                                     />
                                 </div>
-                            )}
-                        </div>
+                                {method.endpoint !== 'task3' && (
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Конец интервала</label>
+                                        <NumberInput
+                                            value={end}
+                                            onChange={setEnd}
+                                            placeholder="Введите число"
+                                        />
+                                    </div>
+                                )}
+                            </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            {method.endpoint === 'task1' && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Шаг</label>
-                                    <NumberInput
-                                        value={step}
-                                        onChange={setStep}
-                                        placeholder="Введите шаг"
-                                        min="0.0001"
-                                        step="0.0001"
-                                    />
-                                </div>
-                            )}
-                            {method.endpoint !== 'task1' && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Точность</label>
-                                    <NumberInput
-                                        value={tolerance}
-                                        onChange={setTolerance}
-                                        placeholder="Введите точность"
-                                        min="0.0000001"
-                                        step="0.0000001"
-                                    />
-                                </div>
-                            )}
+                            <div className="grid grid-cols-2 gap-4">
+                                {method.endpoint === 'task1' && (
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Шаг</label>
+                                        <NumberInput
+                                            value={step}
+                                            onChange={setStep}
+                                            placeholder="Введите шаг"
+                                            min="0.0001"
+                                            step="0.0001"
+                                        />
+                                    </div>
+                                )}
+                                {method.endpoint !== 'task1' && (
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Точность</label>
+                                        <NumberInput
+                                            value={tolerance}
+                                            onChange={setTolerance}
+                                            placeholder="Введите точность"
+                                            min="0.0000001"
+                                            step="0.0000001"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="flex flex-wrap gap-4 mt-6">
-                    <button
-                        onClick={handleSolve}
-                        disabled={loading}
-                        className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {loading ? 'Решение...' : 'Решить уравнение'}
-                    </button>
+                    <div className="flex flex-wrap gap-4 mt-6">
+                        <button
+                            onClick={handleSolve}
+                            disabled={loading}
+                            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            {loading ? 'Решение...' : 'Решить уравнение'}
+                        </button>
 
-                    <button
-                        onClick={handleGenerateApi}
-                        className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
-                    >
-                        <Link className="w-4 h-4" />
-                        Сформировать API запрос
-                    </button>
-                </div>
+                        <button
+                            onClick={handleGenerateApi}
+                            className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+                        >
+                            <Link className="w-4 h-4"/>
+                            Сформировать API запрос
+                        </button>
+                    </div>
 
-                {apiUrl && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <div className="flex justify-between items-start gap-4">
-                            <div className="flex-1">
-                                <h3 className="font-medium mb-2">API запрос:</h3>
-                                <div className="break-all font-mono text-sm">
-                                    {apiUrl}
+                    {apiUrl && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex-1">
+                                    <h3 className="font-medium mb-2">API запрос:</h3>
+                                    <div className="break-all font-mono text-sm">
+                                        {apiUrl}
+                                    </div>
                                 </div>
+                                <button
+                                    onClick={() => copyToClipboard(apiUrl)}
+                                    className="p-2 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2"
+                                    title="Копировать в буфер обмена"
+                                >
+                                    <Copy className="w-5 h-5"/>
+                                </button>
                             </div>
-                            <button
-                                onClick={() => copyToClipboard(apiUrl)}
-                                className="p-2 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2"
-                                title="Копировать в буфер обмена"
-                            >
-                                <Copy className="w-5 h-5" />
-                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {error && (
+                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                        <div className="flex">
+                            <div className="flex-1">
+                                <p className="text-red-700">{error}</p>
+                            </div>
                         </div>
                     </div>
                 )}
-            </div>
 
-            {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                    <div className="flex">
-                        <div className="flex-1">
-                            <p className="text-red-700">{error}</p>
-                        </div>
+                {results && (
+                    <div className="space-y-6">
+                        {METHOD_RESPONSE_TYPES[method.endpoint] === API_TYPES.SEPARATION && renderSeparationResults(results)}
+                        {METHOD_RESPONSE_TYPES[method.endpoint] === API_TYPES.SOLUTION && renderSolutionResult(results)}
+                        {METHOD_RESPONSE_TYPES[method.endpoint] === API_TYPES.COMPARISON && renderComparisonResults(results)}
                     </div>
-                </div>
-            )}
-
-            {results && (
-                <div className="space-y-6">
-                    {METHOD_RESPONSE_TYPES[method.endpoint] === API_TYPES.SEPARATION && renderSeparationResults(results)}
-                    {METHOD_RESPONSE_TYPES[method.endpoint] === API_TYPES.SOLUTION && renderSolutionResult(results)}
-                    {METHOD_RESPONSE_TYPES[method.endpoint] === API_TYPES.COMPARISON && renderComparisonResults(results)}
-                </div>
-            )}
-        </div>
-    );
-}
+                )}
+            </div>
+            );
+            }
